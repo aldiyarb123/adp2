@@ -1,6 +1,7 @@
 package http
 
 import (
+	"fmt"
 	"payment-service/internal/usecase"
 
 	"github.com/gin-gonic/gin"
@@ -20,8 +21,8 @@ func (h *Handler) CreatePayment(c *gin.Context) {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
-	if req.Amount <= 0 {
-		c.JSON(400, gin.H{"error": "invalid amount"})
+	if err := validatePaymentRequest(req.Amount); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -38,4 +39,10 @@ func (h *Handler) CreatePayment(c *gin.Context) {
 
 	c.JSON(200, payment)
 
+}
+func validatePaymentRequest(amount int64) error {
+	if amount <= 0 {
+		return fmt.Errorf("invalid amount")
+	}
+	return nil
 }
