@@ -25,10 +25,6 @@ func main() {
 	r := gin.Default()
 
 	r.POST("/payments", handler.CreatePayment)
-
-	r.Run(":8081")
+	r.GET("/payments/:order_id", handler.GetPayment)
+	r.Run(":8080")
 }
-r.GET("/orders/:id", handler.GetOrder)
-r.PATCH("/orders/:id/cancel", handler.CancelOrder)
-
-r.GET("/payments/:order_id", handler.GetPayment)
