@@ -30,3 +30,31 @@ func (h *Handler) CreateOrder(c *gin.Context) {
 
 	c.JSON(200, order)
 }
+func (h *Handler) GetOrder(c *gin.Context) {
+	id := c.Param("id")
+
+	order, err := h.Usecase.GetOrderByID(id)
+	if err != nil {
+		c.JSON(404, gin.H{"error": "order not found"})
+		return
+	}
+
+	c.JSON(200, order)
+}
+
+func (h *Handler) CancelOrder(c *gin.Context) {
+	id := c.Param("id")
+
+	err := h.Usecase.CancelOrder(id)
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, gin.H{"status": "cancelled"})
+}
+
+if err != nil {
+	c.JSON(503, gin.H{"error": "payment service unavailable"})
+	return
+}

@@ -28,3 +28,7 @@ func main() {
 
 	r.Run(":8081")
 }
+r.GET("/orders/:id", handler.GetOrder)
+r.PATCH("/orders/:id/cancel", handler.CancelOrder)
+
+r.GET("/payments/:order_id", handler.GetPayment)

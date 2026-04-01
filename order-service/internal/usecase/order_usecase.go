@@ -3,6 +3,7 @@ package usecase
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -46,10 +47,9 @@ func (u *OrderUsecase) CreateOrder(customerID, item string, amount int64) (*doma
 
 	resp, err := client.Post("http://localhost:8081/payments", "application/json", bytes.NewBuffer(jsonData))
 
-	if err != nil {
-		order.Status = "Failed"
-		u.Repo.Update(order)
-		return order, err
+	order.Status = "Failed"
+	u.Repo.Update(order)
+	return nil, fmt.Errorf("payment service unavailable")
 	}
 
 	defer resp.Body.Close()
@@ -80,4 +80,21 @@ func (u *OrderUsecase) callPaymentService(orderID string, amount int64) (*http.R
 		"application/json",
 		bytes.NewBuffer(jsonData),
 	)
+}
+func (u *OrderUsecase) GetOrderByID(id string) (*domain.Order, error) {
+	return u.Repo.GetByID(id)
+}
+
+func (u *OrderUsecase) CancelOrder(id string) error {
+	order, err := u.Repo.GetByID(id)
+	if err != nil {
+		return err
+	}
+
+	if order.Status != "Pending" {
+		return fmt.Errorf("only pending orders can be cancelled")
+	}
+
+	order.Status = "Cancelled"
+	return u.Repo.Update(order)
 }

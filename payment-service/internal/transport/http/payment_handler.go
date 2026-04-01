@@ -46,3 +46,15 @@ func validatePaymentRequest(amount int64) error {
 	}
 	return nil
 }
+
+func (h *Handler) GetPayment(c *gin.Context) {
+	orderID := c.Param("order_id")
+
+	payment, err := h.Usecase.Repo.GetByOrderID(orderID)
+	if err != nil {
+		c.JSON(404, gin.H{"error": "not found"})
+		return
+	}
+
+	c.JSON(200, payment)
+}
