@@ -57,7 +57,8 @@ func (u *OrderUsecase) CreateOrder(customerID, item string, amount int64) (*doma
 
 	defer resp.Body.Close()
 
-	if resp.StatusCode == 200 {
+	// determine order status based on payment response
+	if resp.StatusCode == http.StatusOK {
 		order.Status = "Paid"
 	} else {
 		order.Status = "Failed"
