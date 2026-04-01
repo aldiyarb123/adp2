@@ -18,8 +18,11 @@ type OrderUsecase struct {
 
 func (u *OrderUsecase) CreateOrder(customerID, item string, amount int64) (*domain.Order, error) {
 
+	// initialize new order entity
+	orderID := uuid.New().String()
+
 	order := &domain.Order{
-		ID:         uuid.New().String(),
+		ID:         orderID,
 		CustomerID: customerID,
 		ItemName:   item,
 		Amount:     amount,
