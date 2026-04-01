@@ -20,6 +20,10 @@ func (h *Handler) CreatePayment(c *gin.Context) {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
+	if req.Amount <= 0 {
+		c.JSON(400, gin.H{"error": "invalid amount"})
+		return
+	}
 
 	payment, err := h.Usecase.ProcessPayment(req.OrderID, req.Amount)
 	if err != nil {
@@ -33,4 +37,5 @@ func (h *Handler) CreatePayment(c *gin.Context) {
 	}
 
 	c.JSON(200, payment)
+
 }
