@@ -18,7 +18,6 @@ type OrderUsecase struct {
 
 func (u *OrderUsecase) CreateOrder(customerID, item string, amount int64) (*domain.Order, error) {
 
-	// initialize new order entity
 	orderID := uuid.New().String()
 
 	order := &domain.Order{
@@ -34,8 +33,6 @@ func (u *OrderUsecase) CreateOrder(customerID, item string, amount int64) (*doma
 		return nil, err
 	}
 
-	// HTTP client с timeout (ВАЖНО)
-	// create HTTP client with timeout
 	client := &http.Client{
 		Timeout: 2 * time.Second,
 	}
@@ -57,7 +54,6 @@ func (u *OrderUsecase) CreateOrder(customerID, item string, amount int64) (*doma
 
 	defer resp.Body.Close()
 
-	// determine order status based on payment response
 	if resp.StatusCode == http.StatusOK {
 		order.Status = "Paid"
 	} else {
@@ -66,4 +62,22 @@ func (u *OrderUsecase) CreateOrder(customerID, item string, amount int64) (*doma
 
 	u.Repo.Update(order)
 	return order, nil
+}
+func (u *OrderUsecase) callPaymentService(orderID string, amount int64) (*http.Response, error) {
+	client := &http.Client{
+		Timeout: 2 * time.Second,
+	}
+
+	body := map[string]interface{}{
+		"order_id": orderID,
+		"amount":   amount,
+	}
+
+	jsonData, _ := json.Marshal(body)
+
+	return client.Post(
+		"http://localhost:8081/payments",
+		"application/json",
+		bytes.NewBuffer(jsonData),
+	)
 }
