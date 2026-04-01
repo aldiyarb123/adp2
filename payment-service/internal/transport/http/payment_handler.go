@@ -15,7 +15,7 @@ func (h *Handler) CreatePayment(c *gin.Context) {
 		OrderID string `json:"order_id"`
 		Amount  int64  `json:"amount"`
 	}
-
+	// parse incoming JSON request
 	if err := c.BindJSON(&req); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
