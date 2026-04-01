@@ -35,7 +35,10 @@ func (u *OrderUsecase) CreateOrder(customerID, item string, amount int64) (*doma
 	}
 
 	// HTTP client с timeout (ВАЖНО)
-	client := http.Client{Timeout: 2 * time.Second}
+	// create HTTP client with timeout
+	client := &http.Client{
+		Timeout: 2 * time.Second,
+	}
 
 	body := map[string]interface{}{
 		"order_id": order.ID,
