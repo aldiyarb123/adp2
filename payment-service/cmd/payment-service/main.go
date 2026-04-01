@@ -1,0 +1,30 @@
+package main
+
+import (
+	"database/sql"
+	"log"
+
+	"payment-service/internal/repository"
+	"payment-service/internal/transport/http"
+	"payment-service/internal/usecase"
+
+	"github.com/gin-gonic/gin"
+	_ "github.com/lib/pq"
+)
+
+func main() {
+	db, err := sql.Open("postgres", "postgres://postgres:1234@localhost:5433/payments?sslmode=disable")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	repo := &repository.PostgresPaymentRepository{DB: db}
+	uc := &usecase.PaymentUsecase{Repo: repo}
+	handler := &http.Handler{Usecase: uc}
+
+	r := gin.Default()
+
+	r.POST("/payments", handler.CreatePayment)
+
+	r.Run(":8081")
+}
